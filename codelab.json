@@ -1,0 +1,27 @@
+{
+  "environment": "web",
+  "source": "AoG/101/AoG101.md",
+  "format": "html",
+  "prefix": "https://storage.googleapis.com",
+  "mainga": "UA-49880327-14",
+  "updated": "2019-03-14T06:44:00+01:00",
+  "id": "aog-calorie-counter",
+  "duration": 85,
+  "title": "Building for the Google Assistant: Your First Action on Google",
+  "author": "Aygul Zagidullina, Kaan Mamikoglu",
+  "summary": "?.?",
+  "theme": "",
+  "status": [
+    "draft"
+  ],
+  "category": [
+    "aog",
+    "firebase"
+  ],
+  "tags": [
+    "cloud functions",
+    "dialogfow",
+    "javascript"
+  ],
+  "url": "aog-calorie-counter"
+}

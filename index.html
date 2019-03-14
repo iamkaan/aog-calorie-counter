@@ -1,0 +1,351 @@
+
+<!doctype html>
+
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+  <meta name="theme-color" content="#4F7DC9">
+  <meta charset="UTF-8">
+  <title>Building for the Google Assistant: Your First Action on Google</title>
+  <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Source+Code+Pro:400|Roboto:400,300,400italic,500,700|Roboto+Mono">
+  <link rel="stylesheet" href="//fonts.googleapis.com/icon?family=Material+Icons">
+  <link rel="stylesheet" href="https://storage.googleapis.com/codelab-elements/codelab-elements.css">
+  <style>
+    .success {
+      color: #1e8e3e;
+    }
+    .error {
+      color: red;
+    }
+  </style>
+</head>
+<body>
+  <google-codelab-analytics gaid="UA-49880327-14"></google-codelab-analytics>
+  <google-codelab title="Building for the Google Assistant: Your First Action on Google"
+                  environment="web"
+                  feedback-link="">
+    
+      <google-codelab-step label="Overview" duration="3">
+        <p>Actions on Google is a new, exciting developer platform that lets you extend the functionality of the Google Assistant across almost 1 billion devices, including smart speakers, displays, phones, cars, TVs, watches, headphones, and more.</p>
+<p>Not sure how to start developing your very first Action on Google? In this workshop, we&#39;ll learn how to build the Google Assistant apps using Dialogflow and Firebase, test, and, finally, prepare them for publishing in the <a href="https://assistant.google.com/explore/" target="_blank">Actions directory</a>. No prior experience with the platform required.</p>
+<h2>What you&#39;ll build</h2>
+<p>In this workshop, you&#39;ll build a simple Action on Google with the following features:</p>
+<ul>
+<li>Users can start a conversation by explicitly calling your app by name, which then responds with a greeting message.</li>
+<li>Your Action supports deep links to directly launch the user into certain points of dialog.</li>
+<li>Once in conversation, users are prompted to provide their favorite color. Your Action parses the user&#39;s input to extract the information it needs (namely, the color parameter).</li>
+<li>If a color is provided, your Action processes the color parameter to auto-generate a &#34;lucky number&#34; to send back to the user and the conversation ends.</li>
+<li>If no color is provided, your Action sends the user additional prompts until the parameter is extracted.</li>
+<li>Users can explicitly leave the conversation at any time.</li>
+</ul>
+<h2 class="checklist">What you&#39;ll learn</h2>
+<ul class="checklist">
+<li>Understand how Actions work.</li>
+<li>How to create a project in the Actions Console.</li>
+<li>How to create a Dialogflow agent.</li>
+<li>How to define training phrases in Dialogflow.</li>
+<li>How to test your Action in the Actions Console Simulator.</li>
+<li>How to use Dialogflow slot-filling and system entities.</li>
+<li>How to implement Action fulfillment using the Action on Google client library and the Dialogflow inline editor.</li>
+<li>How to create deep links.</li>
+<li>How to add Dialogflow custom entities.</li>
+</ul>
+<h2>What you&#39;ll need</h2>
+<p>The following tools are required:</p>
+<ul>
+<li>A web browser, such as <a href="https://www.google.com/chrome/" target="_blank">Chrome</a>.</li>
+<li>A Google account.</li>
+</ul>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Setup" duration="7">
+        <p>Before we get started, please check your Google permission settings that are necessary to test the Action you&#39;ll build in this codelab:</p>
+<ol type="1">
+<li>Go to the <a href="https://myaccount.google.com/activitycontrols" target="_blank">Activity Controls</a> page.</li>
+<li>Ensure that the following permissions are enabled:<br><br><ul>
+<li>Web &amp; App Activity (you should also enable the option to ‘Include Chrome history&#39;)</li>
+<li>Device Information</li>
+<li>Voice &amp; Audio Activity</li>
+</ul>
+</li>
+</ol>
+<p>To create an Actions project, follow these steps:</p>
+<ol type="1">
+<li>Open the <a href="https://console.actions.google.com/" target="_blank">Actions Console</a>.<br><img src="img/82d4b33114ccca4a.png"></li>
+<li>Click on the <strong>+ Add/import project</strong> card.</li>
+<li>Agree to the Actions on Google policies and Terms of Services, select your country of residence and decide if you&#39;d like to receive newsletter on the Actions on Google.<br><img src="img/de207a6a5275b8b5.png"></li>
+<li>Enter an internal name for your project — calories-counter. Later, we&#39;ll show you how to set an external (display) name for your project.<br><img src="img/e5c3d701dab3de32.png"></li>
+<li>Click the <strong>CREATE PROJECT</strong> button.</li>
+<li>Scroll down to the <strong>More options</strong> section and click on the <strong>Conversational</strong> card.<br><img src="img/b54101ea57e8b807.png"></li>
+<li>In the left navigation menu, click <strong>Build &gt; Actions</strong>.<br><img src="img/493c5091db04402a.png"></li>
+<li>In the <strong>Create Action</strong> dialog window, select <strong>Custom intent</strong> and click the <strong>BUILD</strong> button.<br><img src="img/e13242d405f903c5.png"></li>
+<li>Select your country or territory of residence, agree to the Terms of Service, and decide if you&#39;d like to receive newsletter on Dialogflow.<br><img src="img/4e52664ac99d3dff.png"></li>
+<li>Click the <strong>CREATE</strong> button.<br><img src="img/d0e4f64e42b33984.png"></li>
+</ol>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Start a conversation" duration="10">
+        <p>Intents are the main pillar of creating conversations on Dialogflow. Here is the description of intents from the official documentation:</p>
+<aside class="special"><p>A goal or task that users want to do, such as ordering coffee or finding a piece of music. In Actions on Google, this is represented as a unique identifier and the corresponding user queries that can trigger the intent. When using Dialogflow, this refers to the intent mappings you define in your agent.</p>
+</aside>
+<p>The welcome intent is where you greet your users and prompt them to take their first action. This is the intent that gets called automatically by Google Assistant platform as soon as your app launches. When you create your Dialogflow agent, you get a welcome intent by default. We&#39;re now going to modify it to fit our needs.</p>
+<p><img src="img/b4253421e3310985.png"></p>
+<ol type="1">
+<li>Make sure you&#39;re on the Intents page.</li>
+<li>Select <strong>Default Welcome Intent</strong> from the intent list.</li>
+<li>Scroll down to the <strong>Responses</strong> section.</li>
+</ol>
+<p><img src="img/2f5e02134d746968.png"></p>
+<p>This is where we decide how we greet our users. One of these responses gets picked and returned to the user at random. Since we want to tell our user about how our action works and ask them about the food they want to check calorie of, we need to modify these responses. Therefore, delete all the default responses and add the following. You can customize them as you feel.</p>
+<ul>
+<li>Welcome to Calorie Counter. I can tell you all about calorie values of what you&#39;re about to eat. Please tell me the food and the amount you&#39;re planning to consume.</li>
+<li>Hello, this is Calorie Counter. You can ask me about any food to learn its calorie values. Which food or drink do you want the calorie value for?</li>
+<li>Hi there, Calorie Counter is here to help. I can give you the calorie values of any food or drink. What do you want to learn about.</li>
+</ul>
+<aside class="special"><p>Note that adding more variety here will make users feel more like they&#39;re having a natural conversation as they&#39;ll be greeted in a different way every time they use the app.</p>
+</aside>
+<aside class="warning"><p>Make sure to add a prompt after the intro. We should let users know that we&#39;re expecting an input from them.</p>
+</aside>
+<p>At the end, the Responses section should look like this:</p>
+<p><img src="img/c07fe4490e4503ca.png"></p>
+<p>Now, click on the <em>SAVE</em> button next to the intent name.</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Create a custom entity" duration="7">
+        <p>Let&#39;s start with the official definition of an entity from the Dialogflow documentation.</p>
+<aside class="special"><p>Representation of a real world object that can be used in conversation requests and responses. Entities can be used within your training phrases to tell Dialogflow how to parse parameters from user queries.</p>
+</aside>
+<p>We can think of entities as data sets/categories we expect our users to pass to us. These can be dates, names, addresses, numbers or food names. There is a set of system entities provided by Dialogflow. See <a href="https://dialogflow.com/docs/reference/system-entities" target="_blank">the docs</a> for details. Here are some of the system entities:</p>
+<ul>
+<li>Date and time</li>
+<li>Numbers</li>
+<li>Units</li>
+<li>Names</li>
+<li>Music (artist names, etc.)</li>
+</ul>
+<p>If you want to use any of these categories, you don&#39;t need to add anything additionally. Since food names are not covered by the system entities, we&#39;ll create an entity with the food options we support.</p>
+<p><img src="img/3a701393de265464.png"></p>
+<ol type="1">
+<li>Open the <em>Entities</em> page</li>
+<li>Click on the <em>CREATE ENTITY</em> button.</li>
+</ol>
+<p>Name the entity as <code>food_item</code>.</p>
+<p>Now, we&#39;re going to add the items to our entity. To make it easier and save some time, you can switch to the raw mode as shown:</p>
+<p><img src="img/709dc4e1d015798b.png"></p>
+<p>Then copying the below csv list over:</p>
+<pre><code>&#34;apple&#34;,&#34;apple&#34;,&#34;apples&#34;
+&#34;banana&#34;,&#34;banana&#34;,&#34;bananas&#34;
+&#34;tomato&#34;,&#34;tomato&#34;,&#34;tomatoes&#34;
+&#34;avocado&#34;,&#34;avocado&#34;,&#34;avocados&#34;
+&#34;orange&#34;,&#34;orange&#34;,&#34;oranges&#34;
+&#34;egg&#34;,&#34;egg&#34;,&#34;eggs&#34;
+&#34;white bread&#34;,&#34;white bread&#34;,&#34;bread&#34;
+&#34;hot dog&#34;,&#34;hot dog&#34;,&#34;hot dogs&#34;
+&#34;coffee&#34;,&#34;coffee&#34;
+&#34;hot chocolate&#34;,&#34;hot chocolate&#34;,&#34;hot cocoa&#34;,&#34;cocoa drink&#34;
+</code></pre>
+<p>Now, if you switch back to the <em>editor mode</em>, it should look like this:</p>
+<p><img src="img/bf0dfceb818f2720.png"></p>
+<p>The left column is the name of the item. The right one contains synonyms. Dialogflow will map all the variations from the right column to the name, so you only need to worry about the name in your code.</p>
+<p>Now, click on the <em>SAVE</em> button next to the entity name.</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Create an intent" duration="15">
+        <p>Let&#39;s get back to the <em>Intents</em> page and create a new intent using the <em>CREATE INTENT</em> button to capture our users&#39; responses.</p>
+<p><img src="img/b4253421e3310985.png"></p>
+<p>First, we need to name our intent. We&#39;re going to call this one <strong>Calculate Calorie</strong>.</p>
+<h2>Training phrases</h2>
+<p>Next, we need to add training phrases. These are trigger sentences we expect our users to say in order to get calorie info. Here is the official definition:</p>
+<aside class="special"><p>When using Dialogflow, this refers to an example phrase that users might utter to express their intent. Dialogflow expands your training phrases to other similar user queries to improve matching.</p>
+</aside>
+<p>It&#39;s always a good idea to spend some time on training phrases to capture as many variations as possible.</p>
+<aside class="special"><p>While there&#39;s no minimum or maximum number of training phrases you can enter, it&#39;s recommended to add 15 or more variations.</p>
+</aside>
+<p>Let&#39;s go ahead and add the following sentences as training phrases:</p>
+<ul>
+<li>3 eggs</li>
+<li>2 cups of coffee</li>
+<li>I ate 1 banana</li>
+<li>What is the calorie of 3 avocados</li>
+<li>I want to eat 5 tomatoes</li>
+<li>How many calories will I get if I eat 2 hot dogs</li>
+<li>I&#39;m about to eat 3 apples</li>
+</ul>
+<p><img src="img/d1afa3d11762db79.png"></p>
+<p>As you add the phrases, you might have noticed that some of the words get highlighted. These are the entities Dialogflow recognizes. If you click on them, you can see the which entity they matched. You can also modify the range of the entities or add new ones.</p>
+<h2>Action and parameters</h2>
+<p>Now, scroll to the <em>Action and parameters</em> section and click <em>MANAGE PARAMETERS AND ACTION</em>.</p>
+<p><img src="img/3e642fd1ab605545.png"></p>
+<p>Let&#39;s look at each column to understand what they mean for us:</p>
+<aside class="special"><p>Required: We need to make sure this box is checked if our app relies on this parameter. By default, all parameters are optional.<br>Parameter name: This is how the parameter will be passed to us in the code. This is the most important column for us.<br>Entity: The entity of the parameter<br>Value: This can be used to refer to the parameter&#39;s value from the static responses. So you could do _&#34;You said $number $food<em>item&#34;</em>.<br>Is list: If we expect users to enter multiple values for a particular parameter, we can check this box to receive all values as a single list parameter. For the sake of this workshop, we&#39;ll expect single parameter each time.</p>
+</aside>
+<p>So, when we look at this table, we see that Dialogflow recognized 3 entities in our sentences. We only expect numbers and food items from user. While unit volumes would be useful in the full version of the action, for this workshop we&#39;ll go ahead and delete the <em>unit-volume</em> entity. But we still want to make sure we capture the number of cups. So, go back to training phrases, select <em>2</em> in the <em>2 cups of coffee</em> sentence and pick <em>@sys.number:number</em>.</p>
+<p>Now, let&#39;s click on the <em>SAVE</em> button and try out our intent quickly. Saving will start an AI training process. This is where Dialogflow uses your training phrases to generate other potential trigger phrases.</p>
+<p>Once the agent training is completed, we can use the panel on the right to enter a user response to see how it gets parsed by Dialogflow. Let&#39;s enter <em>I&#39;m about to drink 1 cup of coffee</em> and press enter.</p>
+<p><img src="img/3e642fd1ab605545.png"></p>
+<p>We can see that <em>1</em> was recognized as <code>number</code> and <em>coffee</em> as a <code>food_item</code></p>
+<aside class="warning"><p>Note that our action doesn&#39;t pick up the number automatically when user says <em>&#34;an apple&#34;</em>. For now, this is okay.</p>
+</aside>
+<p>Before we proceed to the next step, there&#39;s one last thing to do. Go to parameters section and mark _food<em>item</em> as required.</p>
+<p><img src="img/effa8d8c58e1ee4.png"></p>
+<p>Now, click on <em>Define prompts</em> and close the popup after adding the following prompts:</p>
+<ul>
+<li>Please tell me what you ate.</li>
+<li>I need to know what you consumed.</li>
+<li>Let me know what you&#39;re planning to eat.</li>
+</ul>
+<p>This will ensure that our intent doesn&#39;t get triggered without a food item.</p>
+<p>Let&#39;s save to ensure our changes are not lost.</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Create dynamic response" duration="15">
+        <p>On the Calculate Calorie intent page, scroll to the bottom and expand the <code>Fulfillment</code> section. Instead of adding responses to our intent, we&#39;re going to use fulfillments. Before starting with the implementation, let&#39;s look at the description of fulfillments:</p>
+<aside class="special"><p>A service, app, feed, conversation, or other logic that handles an intent and carries out the corresponding Action.</p>
+</aside>
+<p>We use fulfillments to create dynamic responses. Now, let&#39;s click <em>ENABLE FULFILLMENT</em> to unlock the fulfillment section. Then, enable webhook call by toggling <em>Enable webhook call for this intent</em>. Save the changes.</p>
+<p><img src="img/e7c547a1e8305797.png"></p>
+<h2>Fulfillment via inline editor</h2>
+<p>We&#39;re going to use Cloud Functions for Firebase for our fulfillment. Usually, we would need to create a webhook and pass it to Dialogflow but luckily, Dialogflow has an inline editor where we can create and deploy Cloud Functions. So, let&#39;s go ahead and enable the <em>Inline Editor</em>. You will get a half implemented, fairly helpful code.</p>
+<p><img src="img/b08c38acabfc3e33.png"></p>
+<p>We&#39;re going to replace that code with the following:</p>
+<pre><code>&#39;use strict&#39;;
+
+const {dialogflow} = require(&#39;actions-on-google&#39;);
+const functions = require(&#39;firebase-functions&#39;);
+
+const app = dialogflow({debug: true});
+
+app.intent(&#39;Calculate Calorie&#39;, (conv, {number, food_item}) =&gt; {
+  number = number || 1;
+  const calorieValue = calorieValueForFoodItem(food_item);
+  const totalCalories = calorieValue * number;
+
+  conv.ask(&#39;That is &#39; + totalCalories + &#39; calories. What other food do you want to check?&#39;);
+});
+
+function calorieValueForFoodItem(food_item) {
+  switch(food_item) {
+    case &#39;apple&#39;:
+      return 95;
+    case &#39;banana&#39;:
+      return 105;
+    case &#39;tomato&#39;:
+      return 105;
+    case &#39;avocado&#39;:
+      return 320;
+    case &#39;orange&#39;:
+      return 60;
+    case &#39;egg&#39;:
+      return 80;
+    case &#39;white bread&#39;:
+      return 66;
+    case &#39;hot dog&#39;:
+      return 150;
+    case &#39;coffee&#39;:
+      return 0;
+    case &#39;hot chocolate&#39;:
+      return 194;
+  }
+}
+
+exports.dialogflowFirebaseFulfillment = functions.https.onRequest(app);
+</code></pre>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Finish the conversation" duration="10">
+        <p>Finally, if our user is done using our app, we should allow them to leave the conversation. In order to do that, we&#39;re going to create a new intent. The intent name here is not important but let&#39;s call it <em>End Conversation</em>.</p>
+<p>Now, expand the <em>Events</em> section and add <code>actions_intent_CANCEL</code> as an event. This will allow our intent to get triggered if user wants to leave the app using phrases like <em>goodbye</em> or <em>cancel</em>.</p>
+<p><img src="img/94d1ced12834d437.png"></p>
+<p>Next, let&#39;s add some training phrases that might not be covered by the system by default. Go ahead and add the floowing training phrases:</p>
+<ul>
+<li>Never mind</li>
+<li>That&#39;s enough</li>
+<li>Enough</li>
+<li>That&#39;s all</li>
+<li>I&#39;m done</li>
+<li>Done</li>
+<li>No</li>
+<li>Nothing</li>
+</ul>
+<p>Scroll down and add <em>Thanks for using Calorie Counter. Come again soon.</em> as a response. Then toggle the <em>Set this intent as end of conversation</em> option.</p>
+<p><img src="img/2c1443300b02307e.png"></p>
+<p>We can now save the intent and test our action.</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Create a deep link" duration="5">
+        <p>When users say &#34;Talk to Calorie Counter&#34;, it triggers the welcome intent which acts as an entry point for users to start a conversation with your Action. However, most of the users would rather jump to the specific task they want to accomplish than start at the beginning of the conversation every time. You can provide explicit deep links as shortcuts into the conversation to help users get things done more efficiently.</p>
+<p>We&#39;re going to add the <strong>Calculate Calorie</strong> intent for deep linking. It means that users can skip the welcome intent and explicitly invoke the <strong>Calculate Calorie</strong> intent as a deep link (for example, &#34;Hey Google, talk to my test app about apple&#34;). The training phrases and parameters you defined for the <strong>Calculate Calorie</strong> intent enable Dialogflow to extract the food parameter when users invoke this deep link.</p>
+<p>To add our intent for deep linking, follow these steps:</p>
+<ol type="1">
+<li>Open the Dialogflow Console.</li>
+<li>In the left navigation menu, click <strong>Integrations</strong>.</li>
+<li>In the Google Assistant card, click <strong>Integration Settings</strong>.<br><img src="img/a3308f6896875e64.png"></li>
+<li>In the <strong>Discovery</strong> section, start entering intent name, then select it from the suggestions list.</li>
+</ol>
+<p>The Google Assistant will now listen for users to provide a food name in their invocation and extract the food parameter for our fulfillment.</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Prepare for publishing" duration="10">
+        <p>In the final section, we&#39;ll prepare the Actions project draft for release. This is when we specify the information users see about our Action in the Actions directory and can also configure other settings (for example, to control which device types and regions our Action will be available in).</p>
+<h2>Add display name</h2>
+<p>Here are the steps to pick a display name for our Action:</p>
+<ol type="1">
+<li>Open the <a href="https://console.actions.google.com/" target="_blank">Actions Console</a>.</li>
+<li>In the left navigation menu, click <strong>Setup &gt; Invocation</strong>.</li>
+<li>Enter <strong>Calorie Counter</strong> as the display name for the project.</li>
+<li>Click the <strong>SAVE</strong> button.</li>
+</ol>
+<h2>Add directory information</h2>
+<p>To add the directory information for our Action, we&#39;re going to follow these steps:</p>
+<ol type="1">
+<li>Open the <a href="https://console.actions.google.com/" target="_blank">Actions Console</a>.</li>
+<li>In the left navigation menu, click <strong>Deploy &gt; Directory information</strong>.<br><img src="img/4a16ef9913c99bbd.png"></li>
+<li>Enter descriptions for the Action, a short description can be up to 100 characters, a full (long) description can be up to 4000 characters.</li>
+<li>Enter up to 5 sample invocations that can be used to invoke the Action.</li>
+<li>Specify logo and banner images for the Action. The image size requirements are 1920x1080 px for the banner image and 192x192 px for the logo image.</li>
+<li>Enter contact details for the Action. This information is displayed publicly and is provided so users can contact us.</li>
+<li>Enter the <a href="https://developers.google.com/actions/policies/privacy-policy-guide" target="_blank">privacy policy</a> link. This link will be made publicly available to users.</li>
+<li>Pick the category that best describes the Action.</li>
+<li>Toggle the <strong>For Families</strong> option to <strong>No</strong> as our Action isn&#39;t targeted at kids and families,.</li>
+<li>Toggle the <strong>Alcohol and Tobacco</strong> option to <strong>No</strong> as our Action doesn&#39;t feature any alcohol or tobacco-related content.</li>
+<li>Click the <strong>SAVE</strong> button.</li>
+</ol>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Next steps" duration="3">
+        <aside class="special"><p>Congratulations!<br>You now know the basics of building conversational user interfaces with Actions on Google.</p>
+</aside>
+<h2>What&#39;s next</h2>
+<p>Please take your time to explore the following resources to learn more about Actions on Google:</p>
+<p>Console: <a href="console.actions.google.com" target="_blank">console.actions.google.com</a><br>Build with Templates: <a href="developers.google.com/actions/templates" target="_blank">developers.google.com/actions/templates</a><br>Build with Sample Actions: <a href="developers.google.com/actions/samples/actions" target="_blank">developers.google.com/actions/samples/actions</a><br>Documentation for Actions on Google: <a href="developers.google.com/actions" target="_blank">developers.google.com/actions</a><br>Documentation for Dialogflow: <a href="dialogflow.com/docs" target="_blank">dialogflow.com/docs</a><br>Codelabs: <a href="codelabs.developers.google.com" target="_blank">codelabs.developers.google.com</a><br>Sample code on Github: <a href="https://github.com/actions-on-google" target="_blank">https://github.com/actions-on-google</a></p>
+
+
+      </google-codelab-step>
+    
+  </google-codelab>
+
+  <script src="https://storage.googleapis.com/codelab-elements/native-shim.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements/custom-elements.min.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements/prettify.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements/codelab-elements.js"></script>
+
+</body>
+</html>
