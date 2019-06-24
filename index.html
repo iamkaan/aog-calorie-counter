@@ -28,16 +28,6 @@
       <google-codelab-step label="Overview" duration="3">
         <p>Actions on Google is a new, exciting developer platform that lets you extend the functionality of the Google Assistant across almost 1 billion devices, including smart speakers, displays, phones, cars, TVs, watches, headphones, and more.</p>
 <p>Not sure how to start developing your very first Action on Google? In this workshop, we&#39;ll learn how to build the Google Assistant apps using Dialogflow and Firebase, test, and, finally, prepare them for publishing in the <a href="https://assistant.google.com/explore/" target="_blank">Actions directory</a>. No prior experience with the platform required.</p>
-<h2>What you&#39;ll build</h2>
-<p>In this workshop, you&#39;ll build a simple Action on Google with the following features:</p>
-<ul>
-<li>Users can start a conversation by explicitly calling your app by name, which then responds with a greeting message.</li>
-<li>Your Action supports deep links to directly launch the user into certain points of dialog.</li>
-<li>Once in conversation, users are prompted to provide their favorite color. Your Action parses the user&#39;s input to extract the information it needs (namely, the color parameter).</li>
-<li>If a color is provided, your Action processes the color parameter to auto-generate a &#34;lucky number&#34; to send back to the user and the conversation ends.</li>
-<li>If no color is provided, your Action sends the user additional prompts until the parameter is extracted.</li>
-<li>Users can explicitly leave the conversation at any time.</li>
-</ul>
 <h2 class="checklist">What you&#39;ll learn</h2>
 <ul class="checklist">
 <li>Understand how Actions work.</li>
@@ -185,7 +175,7 @@
 <p>Now, scroll to the <em>Action and parameters</em> section and click <em>MANAGE PARAMETERS AND ACTION</em>.</p>
 <p><img src="img/3e642fd1ab605545.png"></p>
 <p>Let&#39;s look at each column to understand what they mean for us:</p>
-<aside class="special"><p>Required: We need to make sure this box is checked if our app relies on this parameter. By default, all parameters are optional.<br>Parameter name: This is how the parameter will be passed to us in the code. This is the most important column for us.<br>Entity: The entity of the parameter<br>Value: This can be used to refer to the parameter&#39;s value from the static responses. So you could do _&#34;You said $number $food<em>item&#34;</em>.<br>Is list: If we expect users to enter multiple values for a particular parameter, we can check this box to receive all values as a single list parameter. For the sake of this workshop, we&#39;ll expect single parameter each time.</p>
+<aside class="special"><p>Required: We need to make sure this box is checked if our app relies on this parameter. By default, all parameters are optional.<br>Parameter name: This is how the parameter will be passed to us in the code. This is the most important column for us.<br>Entity: The entity of the parameter<br>Value: This can be used to refer to the parameter&#39;s value from the static responses. So you could do <em>&#34;You said $number $food_item&#34;</em>.<br>Is list: If we expect users to enter multiple values for a particular parameter, we can check this box to receive all values as a single list parameter. For the sake of this workshop, we&#39;ll expect single parameter each time.</p>
 </aside>
 <p>So, when we look at this table, we see that Dialogflow recognized 3 entities in our sentences. We only expect numbers and food items from user. While unit volumes would be useful in the full version of the action, for this workshop we&#39;ll go ahead and delete the <em>unit-volume</em> entity. But we still want to make sure we capture the number of cups. So, go back to training phrases, select <em>2</em> in the <em>2 cups of coffee</em> sentence and pick <em>@sys.number:number</em>.</p>
 <p>Now, let&#39;s click on the <em>SAVE</em> button and try out our intent quickly. Saving will start an AI training process. This is where Dialogflow uses your training phrases to generate other potential trigger phrases.</p>
